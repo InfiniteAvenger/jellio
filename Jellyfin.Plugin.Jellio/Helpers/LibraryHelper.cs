@@ -1,4 +1,5 @@
 using System;
+using Jellyfin.Data.Entities;
 using Jellyfin.Data.Enums;
 using MediaBrowser.Controller.Dto;
 using MediaBrowser.Controller.Library;
@@ -17,6 +18,11 @@ public static class LibraryHelper
             return Array.Empty<BaseItemDto>();
         }
 
+        return GetUserLibraries(user, userViewManager, dtoService);
+    }
+
+    internal static BaseItemDto[] GetUserLibraries(User user, IUserViewManager userViewManager, IDtoService dtoService)
+    {
         var query = new UserViewQuery { User = user };
         var folders = userViewManager.GetUserViews(query);
 
@@ -28,5 +34,7 @@ public static class LibraryHelper
                 dto.Type is BaseItemKind.CollectionFolder
                 && dto.CollectionType is CollectionType.tvshows or CollectionType.movies
         );
+    }
+}
     }
 }

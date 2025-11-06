@@ -1,5 +1,6 @@
 using System;
 using System.Security.Claims;
+using Jellyfin.Data.Entities;
 using Jellyfin.Data.Queries;
 using MediaBrowser.Controller.Devices;
 using MediaBrowser.Controller.Library;
@@ -23,6 +24,12 @@ public static class RequestHelpers
         }
 
         return userIdGuid;
+    }
+
+    internal static User? GetCurrentUser(ClaimsPrincipal claimsPrincipal, IUserManager userManager)
+    {
+        var userId = GetCurrentUserId(claimsPrincipal);
+        return userId == null ? null : userManager.GetUserById(userId.Value);
     }
 
     internal static Guid? GetUserIdByAuthToken(

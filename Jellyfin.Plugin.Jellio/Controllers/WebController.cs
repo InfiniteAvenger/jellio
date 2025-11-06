@@ -49,20 +49,20 @@ public class WebController : ControllerBase
         return new FileStreamResult(resourceStream, "text/html");
     }
 
+    [Authorize]
     [HttpGet("server-info")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Produces(MediaTypeNames.Application.Json)]
     public IActionResult GetServerInfo()
     {
-        // Get user from the X-Emby-Token header (sent by ApiClient in Jellyfin web UI)
-        var userId = RequestHelpers.GetCurrentUserId(User);
-        if (userId == null)
+        var user = RequestHelpers.GetCurrentUser(User, _userManager);
+        if (user == null)
         {
-            return Unauthorized(new { error = "Not authenticated. Please access this page through Jellyfin's Dashboard." });
+            return Unauthorized();
         }
 
         var friendlyName = _serverApplicationHost.FriendlyName;
-        var libraries = LibraryHelper.GetUserLibraries(userId.Value, _userManager, _userViewManager, _dtoService);
+        var libraries = LibraryHelper.GetUserLibraries(user, _userViewManager, _dtoService);
 
         return Ok(new { name = friendlyName, libraries });
     }
