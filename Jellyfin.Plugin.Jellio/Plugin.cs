@@ -28,7 +28,7 @@ public class Plugin : BasePlugin<BasePluginConfiguration>, IHasWebPages
             new PluginPageInfo
             {
                 Name = Name,
-                EmbeddedResourcePath = "Jellyfin.Plugin.Jellio.Web.redirect.html",
+                EmbeddedResourcePath = "Jellyfin.Plugin.Jellio.Web.config.html",
             },
         ];
     }
