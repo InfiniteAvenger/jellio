@@ -12,14 +12,26 @@ namespace Jellyfin.Plugin.Jellio.Controllers;
 
 [ApiController]
 [Route("jellio")]
-public class WebController(
-    IUserManager userManager,
-    IUserViewManager userViewManager,
-    IDtoService dtoService,
-    IServerApplicationHost serverApplicationHost
-) : ControllerBase
+public class WebController : ControllerBase
 {
+    private readonly IUserManager _userManager;
+    private readonly IUserViewManager _userViewManager;
+    private readonly IDtoService _dtoService;
+    private readonly IServerApplicationHost _serverApplicationHost;
     private readonly Assembly _executingAssembly = Assembly.GetExecutingAssembly();
+
+    public WebController(
+        IUserManager userManager,
+        IUserViewManager userViewManager,
+        IDtoService dtoService,
+        IServerApplicationHost serverApplicationHost
+    )
+    {
+        _userManager = userManager;
+        _userViewManager = userViewManager;
+        _dtoService = dtoService;
+        _serverApplicationHost = serverApplicationHost;
+    }
 
     [HttpGet]
     [HttpGet("configure")]
@@ -50,8 +62,8 @@ public class WebController(
             return Unauthorized();
         }
 
-        var friendlyName = serverApplicationHost.FriendlyName;
-        var libraries = LibraryHelper.GetUserLibraries(userId.Value, userManager, userViewManager, dtoService);
+        var friendlyName = _serverApplicationHost.FriendlyName;
+        var libraries = LibraryHelper.GetUserLibraries(userId.Value, _userManager, _userViewManager, _dtoService);
 
         return Ok(new { name = friendlyName, libraries });
     }
