@@ -37,7 +37,7 @@ All credit for the original work goes to Vanchaxy. This version includes small u
 1. Open the plugin at:
 
    ```
-   https://<your-jellyfin-server>/jellio/configure
+   https://<your-jellyfin-server>/jellio
    ```
 2. Add your Jellyfin **API Key** (Dashboard → Users → [User] → API Keys → New Key)
 3. Choose which libraries (Movies, TV Shows) to expose

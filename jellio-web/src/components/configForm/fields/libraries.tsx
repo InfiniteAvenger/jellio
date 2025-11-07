@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import type { ConfigFormType } from '@/components/configForm/formSchema.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import {
   FormControl,
@@ -13,7 +12,7 @@ import {
 import type { Library } from '@/types';
 
 interface Props {
-  form: UseFormReturn<ConfigFormType>;
+  form: UseFormReturn<any>;
   serverName: string;
   libraries: Library[];
 }

@@ -4,11 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { encode } from 'js-base64';
 import { Clipboard, Globe, Monitor } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import {
-  LibrariesField,
-  ServerNameField,
-} from '@/components/configForm/fields';
-import type { ConfigFormType } from '@/components/configForm/formSchema.tsx';
+import { LibrariesField, ServerNameField, JellyseerrFieldset } from '@/components/configForm/fields';
 import { formSchema } from '@/components/configForm/formSchema.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import {
@@ -28,11 +24,14 @@ interface Props {
 
 const ConfigForm: FC<Props> = ({ serverInfo }) => {
   const [copied, setCopied] = useState(false);
-  const form = useForm<ConfigFormType>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       serverName: serverInfo.serverName,
       libraries: [],
+      jellyseerrEnabled: false,
+      jellyseerrUrl: '',
+      jellyseerrApiKey: '',
     },
   });
 
@@ -43,13 +42,18 @@ const ConfigForm: FC<Props> = ({ serverInfo }) => {
   const handleInstall = async (action: 'clipboard' | 'web' | 'client') => {
     const values = form.getValues();
     const newToken = await startAddonSession(serverInfo.accessToken);
-    const configuration = {
+    const configuration: any = {
       AuthToken: newToken,
       LibrariesGuids: values.libraries.map((lib) =>
         lib.key.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5'),
       ),
       ServerName: serverInfo.serverName,
     };
+    if (values.jellyseerrEnabled && values.jellyseerrUrl) {
+      configuration.JellyseerrEnabled = true;
+      configuration.JellyseerrUrl = values.jellyseerrUrl;
+      if (values.jellyseerrApiKey) configuration.JellyseerrApiKey = values.jellyseerrApiKey;
+    }
     const encodedConfiguration = encode(JSON.stringify(configuration), true);
     const addonUrl = `${getBaseUrl()}/${encodedConfiguration}/manifest.json`;
     if (action === 'clipboard') {
@@ -72,6 +76,7 @@ const ConfigForm: FC<Props> = ({ serverInfo }) => {
           serverName={serverName}
           libraries={serverInfo.libraries}
         />
+        <JellyseerrFieldset form={form} />
         <div className="flex flex-col items-center justify-center p-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

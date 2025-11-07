@@ -1,0 +1,125 @@
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Jellyfin.Plugin.Jellio.Helpers;
+using Jellyfin.Plugin.Jellio.Models;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Jellyfin.Plugin.Jellio.Controllers;
+
+[ApiController]
+[ConfigAuthorize]
+[Route("jellio/{config}/request")]
+public class RequestController : ControllerBase
+{
+    private sealed record JellyseerrRequestBody(
+        string mediaType,
+        int tmdbId,
+        int[]? seasons = null
+    );
+
+    private static HttpClient CreateHttpClient(string baseUrl, string? apiKey)
+    {
+        var client = new HttpClient
+        {
+            BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/")
+        };
+        client.Timeout = TimeSpan.FromSeconds(10);
+        if (!string.IsNullOrWhiteSpace(apiKey))
+        {
+            client.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
+        }
+        return client;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> CreateRequest(
+        [ConfigFromBase64Json] ConfigModel config,
+        [FromQuery] string type,
+        [FromQuery] int? tmdbId,
+        [FromQuery] string? imdbId,
+        [FromQuery] int? season,
+        [FromQuery] int? episode
+    )
+    {
+        if (!config.JellyseerrEnabled || string.IsNullOrWhiteSpace(config.JellyseerrUrl))
+        {
+            return BadRequest("Jellyseerr is not configured.");
+        }
+
+        int? maybeTmdbId = tmdbId;
+
+        try
+        {
+            using var client = CreateHttpClient(config.JellyseerrUrl!, config.JellyseerrApiKey);
+
+            // Resolve TMDB via Jellyseerr search if not provided but imdbId is available
+            if (maybeTmdbId is null && !string.IsNullOrWhiteSpace(imdbId))
+            {
+                var searchUri = $"api/v1/search?query={Uri.EscapeDataString(imdbId!)}";
+                using var resp = await client.GetAsync(searchUri);
+                if (resp.IsSuccessStatusCode)
+                {
+                    using var doc = JsonDocument.Parse(await resp.Content.ReadAsStreamAsync());
+                    if (doc.RootElement.TryGetProperty("results", out var results) && results.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var el in results.EnumerateArray())
+                        {
+                            var mediaType = el.TryGetProperty("mediaType", out var mt) ? mt.GetString() : null;
+                            if (!string.IsNullOrEmpty(mediaType) && string.Equals(mediaType, type, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (el.TryGetProperty("tmdbId", out var tmdbEl) && tmdbEl.TryGetInt32(out var tmdbVal))
+                                {
+                                    maybeTmdbId = tmdbVal;
+                                    break;
+                                }
+                                if (el.TryGetProperty("id", out var idEl) && idEl.TryGetInt32(out var idVal))
+                                {
+                                    maybeTmdbId = idVal; // some responses use 'id' as TMDB id
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (maybeTmdbId is null)
+            {
+                return Problem("Unable to resolve TMDB id for request.", statusCode: 502);
+            }
+
+            int id = maybeTmdbId.Value;
+            int[]? seasons = null;
+            if (string.Equals(type, "tv", StringComparison.OrdinalIgnoreCase))
+            {
+                // Always request the entire season if a season is specified
+                if (season.HasValue)
+                {
+                    seasons = new[] { season.Value };
+                }
+            }
+
+            var body = new JellyseerrRequestBody(
+                mediaType: string.Equals(type, "tv", StringComparison.OrdinalIgnoreCase) ? "tv" : "movie",
+                tmdbId: id,
+                seasons: seasons
+            );
+
+            using var createResp = await client.PostAsJsonAsync("api/v1/request", body);
+            if (createResp.IsSuccessStatusCode)
+            {
+                return Content("Request sent to Jellyseerr.", "text/plain");
+            }
+
+            return Problem($"Jellyseerr request failed with status {(int)createResp.StatusCode}.", statusCode: 502);
+        }
+        catch
+        {
+            return Problem("Could not reach Jellyseerr.", statusCode: 502);
+        }
+    }
+}

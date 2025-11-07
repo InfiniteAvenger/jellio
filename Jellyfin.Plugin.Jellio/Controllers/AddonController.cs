@@ -324,7 +324,9 @@ public class AddonController : ControllerBase
         var item = _libraryManager.GetItemById<BaseItem>(mediaId, userId);
         if (item == null)
         {
-            return NotFound();
+            // If the item isn't in the library, we can't resolve provider IDs here.
+            // Let Stremio fall back to IMDB-based stream routes which include IDs for request flow.
+            return Ok(new { streams = Array.Empty<object>() });
         }
 
         return GetStreamsResult(userId, [item]);
@@ -351,7 +353,24 @@ public class AddonController : ControllerBase
         };
         var items = _libraryManager.GetItemList(query);
 
-    return GetStreamsResult(userId, items);
+        if (items.Count == 0)
+        {
+            // No local stream found; provide a Jellyseerr request link if configured
+            if (config.JellyseerrEnabled && !string.IsNullOrWhiteSpace(config.JellyseerrUrl))
+            {
+                var baseUrl = GetBaseUrl();
+                var requestUrl = $"{baseUrl}/jellio/{Request.RouteValues["config"]}/request?type=movie&imdbId=tt{imdbId}";
+                var streams = new[]
+                {
+                    new { externalUrl = requestUrl, name = "Request via Jellyseerr", description = "Send request to download via Jellyseerr" }
+                };
+                return Ok(new { streams });
+            }
+
+            return Ok(new { streams = Array.Empty<object>() });
+        }
+
+        return GetStreamsResult(userId, items);
     }
 
     [HttpGet("stream/series/tt{imdbId}:{seasonNum:int}:{episodeNum:int}.json")]
@@ -393,6 +412,22 @@ public class AddonController : ControllerBase
         };
         var episodeItems = _libraryManager.GetItemList(episodeQuery);
 
-    return GetStreamsResult(userId, episodeItems);
+        if (episodeItems.Count == 0)
+        {
+            if (config.JellyseerrEnabled && !string.IsNullOrWhiteSpace(config.JellyseerrUrl))
+            {
+                var baseUrl = GetBaseUrl();
+                var requestUrl = $"{baseUrl}/jellio/{Request.RouteValues["config"]}/request?type=tv&imdbId=tt{imdbId}&season={seasonNum}&episode={episodeNum}";
+                var streams = new[]
+                {
+                    new { externalUrl = requestUrl, name = "Request via Jellyseerr", description = "Send request to download via Jellyseerr" }
+                };
+                return Ok(new { streams });
+            }
+
+            return Ok(new { streams = Array.Empty<object>() });
+        }
+
+        return GetStreamsResult(userId, episodeItems);
     }
 }

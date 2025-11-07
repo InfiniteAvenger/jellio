@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { ConfigFormType } from '@/components/configForm/formSchema.tsx';
 import {
   FormControl,
   FormDescription,
@@ -11,9 +10,7 @@ import {
 } from '@/components/ui/form.tsx';
 import { Input } from '@/components/ui/input.tsx';
 
-interface Props {
-  form: UseFormReturn<ConfigFormType>;
-}
+interface Props { form: UseFormReturn<any>; }
 
 export const ServerNameField: FC<Props> = ({ form }) => {
   return (

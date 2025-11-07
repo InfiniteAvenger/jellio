@@ -1,6 +1,5 @@
 import type { FC } from 'react';
 import ConfigForm from '@/components/configForm';
-import FAQ from '@/components/faq.tsx';
 import Header from '@/components/header.tsx';
 import type { ServerInfo } from '@/types';
 
@@ -25,8 +24,7 @@ const ConfigFormPage: FC<Props> = ({ serverInfo }) => {
           certificate or use localhost (127.0.0.1) to install this addon.
         </div>
       )}
-      <ConfigForm serverInfo={serverInfo} />
-      <FAQ />
+  <ConfigForm serverInfo={serverInfo} />
     </div>
   );
 };

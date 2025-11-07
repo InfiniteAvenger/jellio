@@ -9,4 +9,9 @@ public class ConfigModel
     public required string AuthToken { get; init; }
 
     public required IReadOnlyList<Guid> LibrariesGuids { get; init; }
+
+    // Jellyseerr integration
+    public bool JellyseerrEnabled { get; init; } = false;
+    public string? JellyseerrUrl { get; init; }
+    public string? JellyseerrApiKey { get; init; }
 }
