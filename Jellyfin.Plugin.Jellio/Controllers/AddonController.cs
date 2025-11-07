@@ -394,7 +394,7 @@ public class AddonController : ControllerBase
                 if (!string.IsNullOrWhiteSpace(title))
                 {
                     var baseUrl = GetBaseUrl(config.PublicBaseUrl);
-                    var requestUrl = $"{baseUrl}/jellio/{Request.RouteValues["config"]}/request?type=movie&imdbId=tt{imdbId}&title={Uri.EscapeDataString(title)}";
+                    var requestUrl = $"{baseUrl}/jellio/{Request.RouteValues["config"]}/jellyseerr?type=movie&imdbId=tt{imdbId}&title={Uri.EscapeDataString(title)}";
                     var streams = new[]
                     {
                         new { url = requestUrl, name = "📥 Request via Jellyseerr", description = "Click to send request to Jellyseerr" }
@@ -456,7 +456,7 @@ public class AddonController : ControllerBase
                 if (!string.IsNullOrWhiteSpace(title))
                 {
                     var baseUrl = GetBaseUrl(config.PublicBaseUrl);
-                    var requestUrl = $"{baseUrl}/jellio/{Request.RouteValues["config"]}/request?type=tv&imdbId=tt{imdbId}&title={Uri.EscapeDataString(title)}&season={seasonNum}&episode={episodeNum}";
+                    var requestUrl = $"{baseUrl}/jellio/{Request.RouteValues["config"]}/jellyseerr?type=tv&imdbId=tt{imdbId}&title={Uri.EscapeDataString(title)}&season={seasonNum}&episode={episodeNum}";
                     var streams = new[]
                     {
                         new { url = requestUrl, name = "📥 Request via Jellyseerr", description = "Click to send request to Jellyseerr" }

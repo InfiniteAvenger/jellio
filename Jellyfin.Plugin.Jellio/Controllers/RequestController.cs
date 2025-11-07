@@ -12,7 +12,7 @@ namespace Jellyfin.Plugin.Jellio.Controllers;
 
 [ApiController]
 [ConfigAuthorize]
-[Route("jellio/{config}/request")]
+[Route("jellio/{config}/jellyseerr")]
 public class RequestController : ControllerBase
 {
     private static HttpClient CreateHttpClient(string baseUrl, string? apiKey)
