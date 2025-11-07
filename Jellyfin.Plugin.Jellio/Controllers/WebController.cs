@@ -147,6 +147,7 @@ public class WebController : ControllerBase
         {
             return null;
         }
+
         if (!headerValue.StartsWith("MediaBrowser", StringComparison.OrdinalIgnoreCase))
         {
             return null;

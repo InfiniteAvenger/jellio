@@ -13,7 +13,6 @@ using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
-using MediaBrowser.Model.Entities; // ensure item sort order enums
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jellyfin.Plugin.Jellio.Controllers;
@@ -48,6 +47,7 @@ public class AddonController : ControllerBase
         {
             return overrideBaseUrl!.TrimEnd('/');
         }
+
         return $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
     }
 

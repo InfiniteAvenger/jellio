@@ -15,12 +15,6 @@ namespace Jellyfin.Plugin.Jellio.Controllers;
 [Route("jellio/{config}/request")]
 public class RequestController : ControllerBase
 {
-    private sealed record JellyseerrRequestBody(
-        string mediaType,
-        int tmdbId,
-        int[]? seasons = null
-    );
-
     private static HttpClient CreateHttpClient(string baseUrl, string? apiKey)
     {
         var client = new HttpClient
@@ -32,6 +26,7 @@ public class RequestController : ControllerBase
         {
             client.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
         }
+
         return client;
     }
 
@@ -76,6 +71,7 @@ public class RequestController : ControllerBase
                                     maybeTmdbId = tmdbVal;
                                     break;
                                 }
+
                                 if (el.TryGetProperty("id", out var idEl) && idEl.TryGetInt32(out var idVal))
                                 {
                                     maybeTmdbId = idVal; // some responses use 'id' as TMDB id
@@ -103,11 +99,12 @@ public class RequestController : ControllerBase
                 }
             }
 
-            var body = new JellyseerrRequestBody(
-                mediaType: string.Equals(type, "tv", StringComparison.OrdinalIgnoreCase) ? "tv" : "movie",
-                tmdbId: id,
-                seasons: seasons
-            );
+            var body = new
+            {
+                mediaType = string.Equals(type, "tv", StringComparison.OrdinalIgnoreCase) ? "tv" : "movie",
+                tmdbId = id,
+                seasons
+            };
 
             using var createResp = await client.PostAsJsonAsync("api/v1/request", body);
             if (createResp.IsSuccessStatusCode)
