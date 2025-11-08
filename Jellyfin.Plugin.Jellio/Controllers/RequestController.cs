@@ -20,50 +20,28 @@ public class RequestController : ControllerBase
 {
     // Simple in-memory cache to prevent duplicate requests (userId:imdbId:type -> timestamp)
     private static readonly ConcurrentDictionary<string, DateTime> _requestCache = new();
+    private static readonly ConcurrentDictionary<string, object> _requestLocks = new();
     private static readonly TimeSpan _cacheDuration = TimeSpan.FromSeconds(30);
 
-    private static bool IsRecentlyRequested(Guid userId, string identifier, string type)
+    private static bool TryMarkAsProcessing(Guid userId, string identifier, string type)
     {
         var cacheKey = $"{userId}:{identifier}:{type}";
+        var lockObj = _requestLocks.GetOrAdd(cacheKey, _ => new object());
         
-        if (_requestCache.TryGetValue(cacheKey, out var timestamp))
+        lock (lockObj)
         {
-            if (DateTime.UtcNow - timestamp < _cacheDuration)
+            if (_requestCache.TryGetValue(cacheKey, out var timestamp))
             {
-                Console.WriteLine($"[Jellyseerr] Skipping duplicate request (cached {(DateTime.UtcNow - timestamp).TotalSeconds:F1}s ago)");
-                return true;
-            }
-            
-            // Remove expired entry
-            _requestCache.TryRemove(cacheKey, out _);
-        }
-        
-        return false;
-    }
-
-    private static void MarkAsRequested(Guid userId, string identifier, string type)
-    {
-        var cacheKey = $"{userId}:{identifier}:{type}";
-        _requestCache[cacheKey] = DateTime.UtcNow;
-        
-        // Clean up old entries periodically
-        if (_requestCache.Count > 1000)
-        {
-            var cutoff = DateTime.UtcNow - _cacheDuration;
-            var keysToRemove = new List<string>();
-            
-            foreach (var kvp in _requestCache)
-            {
-                if (kvp.Value < cutoff)
+                if (DateTime.UtcNow - timestamp < _cacheDuration)
                 {
-                    keysToRemove.Add(kvp.Key);
+                    Console.WriteLine($"[Jellyseerr] Skipping duplicate request (cached {(DateTime.UtcNow - timestamp).TotalSeconds:F1}s ago)");
+                    return false; // Already requested
                 }
             }
             
-            foreach (var key in keysToRemove)
-            {
-                _requestCache.TryRemove(key, out _);
-            }
+            // Mark as being processed NOW
+            _requestCache[cacheKey] = DateTime.UtcNow;
+            return true; // OK to process
         }
     }
 
@@ -117,9 +95,9 @@ public class RequestController : ControllerBase
                 return Unauthorized();
             }
 
-            // Check for duplicate request
+            // Check for duplicate request (with lock to prevent race condition)
             var identifier = imdbId ?? tmdbId?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? title ?? "unknown";
-            if (IsRecentlyRequested(userId.Value, identifier, type))
+            if (!TryMarkAsProcessing(userId.Value, identifier, type))
             {
                 return Content("✓ Request already sent (duplicate prevented)", "text/plain");
             }
@@ -225,8 +203,7 @@ public class RequestController : ControllerBase
             {
                 Console.WriteLine("[Jellyseerr] ✓ Request successful!");
                 
-                // Mark as requested to prevent duplicates
-                MarkAsRequested(userId.Value, identifier, type);
+                // Already marked in cache at the start, no need to mark again
                 
                 // Return a simple success message
                 // Stremio will attempt to play this URL, fail gracefully, but the request is already sent
