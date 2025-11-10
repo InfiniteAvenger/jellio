@@ -98,7 +98,7 @@ Jellio+ is a modern fork of [Vanchaxy's original Jellio plugin](https://github.c
 
 1. Download the latest release from [GitHub Releases](https://github.com/InfiniteAvenger/jellio-plus/releases)
 
-2. Extract the ZIP file to your Jellyfin plugins directory:![Jellio Streaming in Stremio](assets/jellio-stream.PNG)
+2. Extract the ZIP file to your Jellyfin plugins directory:
 
    - **Windows**: `C:\ProgramData\Jellyfin\Server\plugins\Jellio\`
 
@@ -114,7 +114,7 @@ Jellio+ is a modern fork of [Vanchaxy's original Jellio plugin](https://github.c
 
 
 
-1. **Access Plugin Settings**![Jellyseer Integration](assets/jellyseer-integration.PNG)  
+1. **Access Plugin Settings**![Jellyseer Integration] 
 
    ```
 
@@ -180,31 +180,6 @@ Jellio+ is a modern fork of [Vanchaxy's original Jellio plugin](https://github.c
 
 ## Architecture5. Restart your Jellyfin server
 
-
-
-```
-
-┌─────────────┐    ┌──────────────┐    ┌─────────────┐
-
-│   Stremio   │◄──►│   Jellio+    │◄──►│  Jellyfin   │**Method 2: Manual Installation**
-
-│   Client    │    │   Plugin     │    │   Server    │
-
-└─────────────┘    └──────────────┘    └─────────────┘### Browsing Your Library in Stremio1. Download the latest `.zip` from [Releases](https://github.com/InfiniteAvenger/jellio-plus/releases)
-
-                           │
-
-                           ▼1. Download the latest release from [GitHub Releases](https://github.com/InfiniteAvenger/jellio-plus/releases)
-
-                   ┌──────────────┐
-
-                   │  Jellyseer   │2. Extract the ZIP file to your Jellyfin plugins directory:![V for Vendetta in Stremio](assets/v-for-vendetta-stremio.png)2. Extract it to your Jellyfin plugins folder
-
-                   │  (Optional)  │
-
-                   └──────────────┘   - **Windows**: `C:\ProgramData\Jellyfin\Server\plugins\Jellio\`
-
-```
 
    - **Linux**: `/var/lib/jellyfin/plugins/Jellio/`*Access your Jellyfin movies with full metadata, multiple quality options, and streaming sources*
 
