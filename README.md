@@ -1,9 +1,9 @@
 # Jellio+
 [![Release](https://img.shields.io/github/v/release/InfiniteAvenger/jellio-plus)](https://github.com/InfiniteAvenger/jellio-plus/releases)
 
-**Stream your Jellyfin library directly in Stremio with seamless integration
+*Stream your Jellyfin library directly in Stremio with seamless integration
 
-**This is a fork of [Vanchaxy’s Jellio plugin](https://github.com/vanchaxy/jellio), which connects Jellyfin to Stremio so you can stream your Jellyfin library inside Stremio.
+This is a fork of [Vanchaxy’s Jellio plugin](https://github.com/vanchaxy/jellio), which connects Jellyfin to Stremio so you can stream your Jellyfin library inside Stremio.
 
 Jellio+ is a modern fork of [Vanchaxy's original Jellio plugin](https://github.com/vanchaxy/jellio), updated and enhanced for **Jellyfin 10.11.x** compatibility. This plugin creates a bridge between your Jellyfin media server and Stremio, allowing you to stream your personal media library directly within the Stremio interface.
 
@@ -31,7 +31,7 @@ This fork is updated for **Jellyfin 10.11.2**.
 
 
 
-### Browsing Your Library in Stremio[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+### Browsing Your Library in Stremio
 
 ![Jellio Streaming in Stremio](assets/jellio-stream.PNG)
 
