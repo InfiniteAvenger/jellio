@@ -37,6 +37,8 @@ Enable the optional Jellyseer functionality to be able to directly request media
 
 ### Installation:
 
+NOTICE: It is recommended to have both your Jellyfin and Jellyseer instances accessilbe over HTTPS by using a Cloudflare tunnel. This is the only way I have tested it so far.
+
 1. Go Open Jellyfin Dashboard > Plugins > Manage Repositories
 2. Click "New Repository" and add "Jellio" for the name, and "https://raw.githubusercontent.com/InfiniteAvenger/jellio-plus/metadata/jellyfin-repo-manifest.json" for the repository url
 3. Go back to Plugins, and under "All" find and install Jellio
