@@ -13,11 +13,10 @@ This fork is updated for **Jellyfin 10.11.2**.
 
 - **Full Library Integration** - Access your entire Jellyfin movie and TV show collection in Stremio
 
-- **Smart Search** - Find content across your Jellyfin libraries with Stremio's search functionality  [![Release](https://img.shields.io/github/v/release/InfiniteAvenger/jellio-plus)](https://github.com/InfiniteAvenger/jellio-plus/releases)
-
+- **Smart Search** - Find content across your Jellyfin libraries with Stremio's search functionality 
 - **Cross-Platform** - Works on all Stremio-supported devices (Windows, macOS, Linux, Android, iOS)
 
-- **Jellyseer Integration** - Optional integration with Jellyseer for content requests[![Jellyfin Version](https://img.shields.io/badge/Jellyfin-10.11.x-blue)](https://jellyfin.org/)
+- **Jellyseer Integration** - Optional integration with Jellyseer for content requests
 
 - **High Performance** - Optimized for Jellyfin 10.11.x with .NET 9
 
@@ -25,8 +24,7 @@ This fork is updated for **Jellyfin 10.11.2**.
 
 - **Rich Metadata** - Displays posters, descriptions, ratings, and cast information
 
-- **Multiple Formats** - Supports various video codecs and quality options[![.NET](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/)All credit for the original work goes to Vanchaxy. This version includes small updates to keep the plugin working with the latest Jellyfin release.
-
+- **Multiple Formats** - Supports various video codecs and quality options.
 
 
 ## Screenshots## ✨ Features
