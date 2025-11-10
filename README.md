@@ -14,7 +14,7 @@ This fork is updated for **Jellyfin 10.11.2**.
 - **Cross-Platform** - Works on all Stremio-supported devices (Windows, macOS, Linux, Android, iOS)
 
 - **Jellyseer Integration** - Optional integration with Jellyseer for content requests
-- 
+  
 - **Multiple Formats** - Supports various video codecs and quality options.
 
 
